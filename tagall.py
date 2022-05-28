@@ -17,7 +17,7 @@ class TagAllMod(loader.Module):
     strings = {"name":"TagAll"}
 
     def __init__(self):
-        self.config = loader.ModuleConfig("DEFAULT_MENTION_MESSAGE", "Hello po!\n                ", "Default message of mentions")
+        self.config = loader.ModuleConfig("DEFAULT_MENTION_MESSAGE", "Tag All by Hoshin\n                ", "Default message of mentions")
         self.name = self.strings["name"]
 
     async def client_ready(self, client, db):
