@@ -58,8 +58,8 @@ class DoNotDisturbMod(loader.Module):
                "pm_blocked": ("<b>I don't want any PM from</b> <a href='tg://user?id={}'>you</a>, "
                               "<b>so you have been blocked !</b>"),
                "pm_denied": "<b>I have denied</b> <a href='tg://user?id={}'>you</a> <b>to PM now.</b>",
-               "pm_go_away": ("Hey there! Unfortunately, I don't accept private messages from strangers."
-                              "\n\nPlease contact me in a group, or <b>wait</b> for me to approve you."),
+               "pm_go_away": ("Hi! Unfortunately, I don't accept private messages from strangers."
+                              "\n\nPlease contact @cyyyyy2502, thanks!."),
                "pm_reported": "<b>You just got reported to spam !</b>",
                "pm_limit_arg": "<b>Argument must be 'off', 'on' or a number between 5 and 1000 !</b>",
                "pm_limit_off": "<b>Not allowed users are now free to PM without be automatically blocked.</b>",
