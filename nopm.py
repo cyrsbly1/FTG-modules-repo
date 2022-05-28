@@ -43,8 +43,8 @@ class AntiPMMod(loader.Module):
                           "<b>of your PM permissions.</b>"),
                "notif_off": "<b>Notifications from denied PMs are silenced.</b>",
                "notif_on": "<b>Notifications from denied PMs are now activated.</b>",
-               "go_away": ("Hey there! Unfortunately, I don't accept private messages from "
-                            "strangers.\n\nPlease contact me in a group, or <b>wait</b> "
+               "go_away": ("Hey there! Unfortunately, I don't accept private messages here. "
+                            "\n\nPlease contact @cyyyyy2502, or <b>wait</b> "
                             "for me to approve you."),
                "triggered": ("Hey! I don't appreciate you barging into my PM like this! "
                              "Did you even ask me for approving you to PM? No? Goodbye then."
