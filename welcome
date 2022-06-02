@@ -1,120 +1,101 @@
-from telethon import events
-from telethon.utils import pack_bot_file_id
 
-from FIREX.utils import *
-from userbot.cmdhelp import CmdHelp
-from userbot.plugins.sql_helper.welcome_sql import (
-    add_welcome_setting,
-    get_current_welcome_settings,
-    rm_welcome_setting,
-    update_previous_welcome,
-)
+# -*- coding: utf-8 -*-
+
+# Module author: @ftgmodulesbyfl1yd
+
+from .. import loader, utils
 
 
-@bot.on(events.ChatAction())  # pylint:disable=E0602
-async def _(event):
-    cws = get_current_welcome_settings(event.chat_id)
-    if cws:
-        # logger.info(event.stringify())
-        """user_added=False,
-        user_joined=True,
-        user_left=False,
-        user_kicked=False,"""
-        if event.user_joined:
-            if cws.should_clean_welcome:
-                try:
-                    await bot.delete_messages(  # pylint:disable=E0602
-                        event.chat_id, cws.previous_welcome
-                    )
-                except Exception as e:  # pylint:disable=C0103,W0703
-                    logger.warn(str(e))  # pylint:disable=E0602
-            a_user = await event.get_user()
-            chat = await event.get_chat()
-            me = await bot.get_me()
+@loader.tds
+class WelcomeMod(loader.Module):
+    """Приветствие новых пользователей в чате."""
 
-            title = chat.title if chat.title else "this chat"
-            participants = await event.client.get_participants(chat)
-            count = len(participants)
-            mention = "[{}](tg://user?id={})".format(a_user.first_name, a_user.id)
-            first = a_user.first_name
-            last = a_user.last_name
-            if last:
-                fullname = f"{first} {last}"
+    strings = {"name": "Welcome"}
+
+    async def client_ready(self, client, db):
+        self.db = db
+        self.client = client
+
+    async def welcomecmd(self, message):
+        """Включить/выключить приветствие новых пользователей в чате.
+        Используй: .welcome <clearall (по желанию)>."""
+        welcome = self.db.get("Welcome", "welcome", {})
+        chatid = str(message.chat_id)
+        args = utils.get_args_raw(message)
+        if args == "clearall":
+            self.db.set("Welcome", "welcome", {})
+            return await message.edit(
+                "<b>[Welcome Mode]</b> Defaults loaded."
+            )
+
+        if chatid in welcome:
+            welcome.pop(chatid)
+            self.db.set("Welcome", "welcome", welcome)
+            return await message.edit("<b>[Welcome Mode]</b> Deactivated!")
+
+        welcome.setdefault(chatid, {})
+        welcome[chatid].setdefault("message", "Hello! Welcome po here! Enjoy your stay! <3\n<i>Bot by Cy.</i>")
+        welcome[chatid].setdefault("is_reply", False)
+        self.db.set("Welcome", "welcome", welcome)
+        await message.edit("<b>[Welcome Mode]</b> Activated!")
+
+    async def setwelcomecmd(self, message):
+        """Установить новое приветствие новых пользователей в
+        чате.\nИспользуй: .setwelcome <текст (можно использовать {name}; {
+        chat})>; ничего."""
+        welcome = self.db.get("Welcome", "welcome", {})
+        args = utils.get_args_raw(message)
+        reply = await message.get_reply_message()
+        chatid = str(message.chat_id)
+        chat = await message.client.get_entity(int(chatid))
+        try:
+            if not args and not reply:
+                return await message.edit(
+                    f"<b>Приветствие новых "
+                    f"пользователей в "
+                    f'"{chat.title}":</b>\n\n'
+                    f"<b>Статус:</b> Включено.\n"
+                    f'<b>Приветствие:</b> {welcome[chatid]["message"]}\n\n '
+                    f"<b>~ Установить новое приветствие "
+                    f"можно с помощью команды:</b> "
+                    f".setwelcome <текст>."
+                )
             else:
-                fullname = first
-            username = (
-                f"@{me.username}" if me.username else f"[Me](tg://user?id={me.id})"
+                if reply:
+                    welcome[chatid]["message"] = reply.id
+                    welcome[chatid]["is_reply"] = True
+                else:
+                    welcome[chatid]["message"] = args
+                    welcome[chatid]["is_reply"] = False
+                self.db.set("Welcome", "welcome", welcome)
+                return await message.edit(
+                    "<b>Новое приветствие установлено " "успешно!</b>"
+                )
+        except KeyError:
+            return await message.edit(
+                f'<b>Приветствие новых пользователей в "{chat.title}":</b>\n\n '
+                f"<b>Статус:</b> Отключено"
             )
-            userid = a_user.id
-            current_saved_welcome_message = cws.custom_welcome_message
-            mention = "[{}](tg://user?id={})".format(a_user.first_name, a_user.id)
 
-            current_message = await event.reply(
-                current_saved_welcome_message.format(
-                    mention=mention,
-                    title=title,
-                    count=count,
-                    first=first,
-                    last=last,
-                    fullname=fullname,
-                    username=username,
-                    userid=userid,
-                ),
-                file=cws.media_file_id,
-            )
-            update_previous_welcome(event.chat_id, current_message.id)
-
-
-@bot.on(admin_cmd(pattern="savewelcome", outgoing=True))  # pylint:disable=E0602
-@bot.on(sudo_cmd(pattern="savewelcome", allow_sudo=True))
-async def _(event):
-    if event.fwd_from:
-        return
-    msg = await event.get_reply_message()
-    if msg and msg.media:
-        bot_api_file_id = pack_bot_file_id(msg.media)
-        add_welcome_setting(event.chat_id, msg.message, True, 0, bot_api_file_id)
-        await edit_or_reply(event, "Welcome note saved. ")
-    else:
-        input_str = event.text.split(None, 1)
-        add_welcome_setting(event.chat_id, input_str[1], True, 0, None)
-        await edit_or_reply(event, "Welcome note saved. ")
-
-
-@bot.on(admin_cmd(pattern="clearwelcome", outgoing=True))  # pylint:disable=E0602
-@bot.on(sudo_cmd(pattern="clearwelcome", allow_sudo=True))
-async def _(event):
-    if event.fwd_from:
-        return
-    cws = get_current_welcome_settings(event.chat_id)
-    rm_welcome_setting(event.chat_id)
-    await edit_or_reply(
-        event,
-        "Welcome note cleared. "
-        + "The previous welcome message was `{}`.".format(cws.custom_welcome_message),
-    )
-
-
-@bot.on(admin_cmd(pattern="listwelcome", outgoing=True))  # pylint:disable=E0602
-@bot.on(sudo_cmd(pattern="listwelcome", allow_sudo=True))
-async def _(event):
-    if event.fwd_from:
-        return
-    cws = get_current_welcome_settings(event.chat_id)
-    if hasattr(cws, "custom_welcome_message"):
-        await edit_or_reply(
-            event,
-            "Welcome note found. "
-            + "Your welcome message is\n\n`{}`.".format(cws.custom_welcome_message),
-        )
-    else:
-        await edit_or_reply(event, "No Welcome Message found")
-
-
-CmdHelp("welcome").add_command(
-    "listwelcome", None, "Gets the saved welcome message of FIREX"
-).add_command(
-    "clearwelcome", None, "Clears/Deletes the welcome message (if any)"
-).add_command(
-    "savewelcome", " < reply to msg>", "Saves the replied msg as welcome note from you."
-).add()
+    async def watcher(self, message):
+        """Интересно, почему он именно watcher называется... 🤔"""
+        try:
+            welcome = self.db.get("Welcome", "welcome", {})
+            chatid = str(message.chat_id)
+            if chatid not in welcome:
+                return
+            if message.user_joined or message.user_added:
+                user = await message.get_user()
+                chat = await message.get_chat()
+                if not welcome[chatid]["is_reply"]:
+                    return await message.reply(
+                        (welcome[chatid]["message"]).format(
+                            name=user.first_name, chat=chat.title
+                        )
+                    )
+                msg = await self.client.get_messages(
+                    int(chatid), ids=welcome[chatid]["message"]
+                )
+                await message.reply(msg)
+        except:
+            pass
