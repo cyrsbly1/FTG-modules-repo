@@ -40,9 +40,9 @@ class WelcomeMod(loader.Module):
         await message.edit("<b>[Welcome Mode]</b> Activated!")
 
     async def setwelcomecmd(self, message):
-        """Установить новое приветствие новых пользователей в
-        чате.\nИспользуй: .setwelcome <текст (можно использовать {name}; {
-        chat})>; ничего."""
+        """Set a new greeting for new users in
+         chat.\nUse: .setwelcome <text (you can use {name}; {
+         chat})>; nothing."""
         welcome = self.db.get("Welcome", "welcome", {})
         args = utils.get_args_raw(message)
         reply = await message.get_reply_message()
@@ -51,14 +51,14 @@ class WelcomeMod(loader.Module):
         try:
             if not args and not reply:
                 return await message.edit(
-                    f"<b>Приветствие новых "
-                    f"пользователей в "
-                    f'"{chat.title}":</b>\n\n'
-                    f"<b>Статус:</b> Включено.\n"
-                    f'<b>Приветствие:</b> {welcome[chatid]["message"]}\n\n '
-                    f"<b>~ Установить новое приветствие "
-                    f"можно с помощью команды:</b> "
-                    f".setwelcome <текст>."
+                     f"<b>Welcome new ones"
+                     f"users in "
+                     f'"{chat.title}":</b>\n\n'
+                     f"<b>Status:</b> Enabled.\n"
+                     f'<b>Greeting:</b> {welcome[chatid]["message"]}\n\n '
+                     f"<b>~ Set new greeting "
+                     f"you can use the command:</b> "
+                     f".setwelcome <text>."
                 )
             else:
                 if reply:
@@ -69,12 +69,12 @@ class WelcomeMod(loader.Module):
                     welcome[chatid]["is_reply"] = False
                 self.db.set("Welcome", "welcome", welcome)
                 return await message.edit(
-                    "<b>Новое приветствие установлено " "успешно!</b>"
+                   "<b>New greeting installed " "successfully!</b>"
                 )
         except KeyError:
             return await message.edit(
-                f'<b>Приветствие новых пользователей в "{chat.title}":</b>\n\n '
-                f"<b>Статус:</b> Отключено"
+                f'<b>Welcome new users to "{chat.title}":</b>\n\n '
+                 f"<b>Status:</b> Disabled"
             )
 
     async def watcher(self, message):
