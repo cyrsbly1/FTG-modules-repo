@@ -49,7 +49,7 @@ class DoNotDisturbMod(loader.Module):
                "afk_rate_limit_on": ("<b>AFK status message rate limit enabled.</b>"
                                      "\n\n<b>One AFK status message max will be sent per chat.</b>"),
                "afk_reason": ("<b>I'm AFK right now (since {} ago).</b>"
-                              "\n\n<b>Reason :</b> <i>{}</i>"),
+                              "\n<b>Reason :</b> <i>{}</i>"),
                "arg_on_off": "<b>Argument must be 'off' or 'on' !</b>",
                "pm_off": ("<b>Automatic answer for denied PMs disabled."
                           "\n\nUsers are now free to PM !</b>"),
@@ -58,8 +58,8 @@ class DoNotDisturbMod(loader.Module):
                "pm_blocked": ("<b>I don't want any PM from</b> <a href='tg://user?id={}'>you</a>, "
                               "<b>so you have been blocked !</b>"),
                "pm_denied": "<b>I have denied</b> <a href='tg://user?id={}'>you</a> <b>to PM now.</b>",
-               "pm_go_away": ("Hello! I don't accept any <b>private messages</b> right now."
-                              "\n\nPlease wait for my reply or try again later. Thank you."),
+               "pm_go_away": ("Hey there! Unfortunately, I don't accept <b>private messages</b> right now."
+                              "\n\nPlease try again later. Thank you!"),
                "pm_reported": "<b>You just got reported to spam !</b>",
                "pm_limit_arg": "<b>Argument must be 'off', 'on' or a number between 5 and 1000 !</b>",
                "pm_limit_off": "<b>Not allowed users are now free to PM without be automatically blocked.</b>",
@@ -97,7 +97,7 @@ class DoNotDisturbMod(loader.Module):
     async def unafkcmd(self, message):
         """Remove the AFK status.\n """
         self._db.set(__name__, "afk", False)
-         self._db.set(__name__, "afk_gone", None)
+        self._db.set(__name__, "afk_gone", None)
         self._db.set(__name__, "afk_rate", [])
         await utils.answer(message, self.strings("afk_back", message))
 
