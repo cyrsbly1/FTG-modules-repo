@@ -58,8 +58,8 @@ class DoNotDisturbMod(loader.Module):
                "pm_blocked": ("<b>I don't want any PM from</b> <a href='tg://user?id={}'>you</a>, "
                               "<b>so you have been blocked !</b>"),
                "pm_denied": "<b>I have denied</b> <a href='tg://user?id={}'>you</a> <b>to PM now.</b>",
-               "pm_go_away": ("Hi! Unfortunately, I don't accept private messages here."
-                              "\n\nPlease contact @cyyyyy2505 for info. Thanks!"),
+               "pm_go_away": ("Hello! I don't accept any <b>private messages</b> right now."
+                              "\n\nPlease wait for my reply or try again later. Thank you."),
                "pm_reported": "<b>You just got reported to spam !</b>",
                "pm_limit_arg": "<b>Argument must be 'off', 'on' or a number between 5 and 1000 !</b>",
                "pm_limit_off": "<b>Not allowed users are now free to PM without be automatically blocked.</b>",
@@ -97,7 +97,7 @@ class DoNotDisturbMod(loader.Module):
     async def unafkcmd(self, message):
         """Remove the AFK status.\n """
         self._db.set(__name__, "afk", False)
-        self._db.set(__name__, "afk_gone", None)
+         self._db.set(__name__, "afk_gone", None)
         self._db.set(__name__, "afk_rate", [])
         await utils.answer(message, self.strings("afk_back", message))
 
