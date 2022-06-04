@@ -34,7 +34,7 @@ class WelcomeMod(loader.Module):
             return await message.edit("<b>[Welcome Mode]</b> Deactivated!")
 
         welcome.setdefault(chatid, {})
-        welcome[chatid].setdefault("message", "Hello {name}! Welcome po here! Enjoy your stay!")
+        welcome[chatid].setdefault("message", "Hello {name}! Welcome po sa {chat}! Enjoy your stay!")
         welcome[chatid].setdefault("is_reply", False)
         self.db.set("Welcome", "welcome", welcome)
         await message.edit("<b>[Welcome Mode]</b> Activated!")
